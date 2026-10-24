@@ -193,7 +193,7 @@ impl McpToolsManager {
             .await
             .map_err(|e| McpError::GenericError(format!("Failed to list tools: {:?}", e)))?;
 
-        let mut adapted_tools = Vec::new();
+        let mut adapted_tools = Vec::with_capacity(tools_result.tools.len());
 
         for tool in tools_result.tools {
             let adapter = McpToolAdapter::new(tool, Arc::clone(&connection.service));
