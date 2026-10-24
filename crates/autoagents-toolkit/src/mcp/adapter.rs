@@ -132,7 +132,7 @@ fn convert_mcp_result(result: CallToolResult) -> Result<Value, ToolCallError> {
 
     // Extract content from the result
     if !result.content.is_empty() {
-        let mut contents = Vec::new();
+        let mut contents = Vec::with_capacity(result.content.len());
         for content in &result.content {
             // Serialize the raw content to JSON for flexible handling
             match serde_json::to_value(&content.raw) {
