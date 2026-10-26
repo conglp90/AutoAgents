@@ -201,6 +201,7 @@ where
 
     let mut prepared = Vec::with_capacity(ids.len());
     let mut vectors_iter = vectors.into_iter();
+    let mut all_texts_iter = all_texts.into_iter();
     let mut expected_start = 0usize;
     for (((id, raw), payload_fields), (start, count)) in
         ids.into_iter().zip(raws).zip(mirrored_payloads).zip(ranges)
@@ -212,7 +213,7 @@ where
         }
 
         let mut embeddings = Vec::with_capacity(count);
-        for offset in 0..count {
+        for _offset in 0..count {
             let Some(vector) = vectors_iter.next() else {
                 return Err(VectorStoreError::EmbeddingError(
                     EmbeddingError::EmbedFailure(
@@ -222,7 +223,9 @@ where
             };
 
             embeddings.push(Embedding {
-                document: all_texts[start + offset].clone(),
+                document: all_texts_iter
+                    .next()
+                    .expect("all_texts should have enough elements"),
                 vec: vector.into(),
             });
         }
@@ -278,6 +281,7 @@ where
 
     let mut prepared = Vec::with_capacity(ids.len());
     let mut vectors_iter = vectors.into_iter();
+    let mut all_texts_iter = all_texts.into_iter();
     let mut expected_start = 0usize;
     for (((id, raw), payload_fields), (start, count)) in
         ids.into_iter().zip(raws).zip(mirrored_payloads).zip(ranges)
@@ -289,7 +293,7 @@ where
         }
 
         let mut embeddings = Vec::with_capacity(count);
-        for offset in 0..count {
+        for _offset in 0..count {
             let Some(vector) = vectors_iter.next() else {
                 return Err(VectorStoreError::EmbeddingError(
                     EmbeddingError::EmbedFailure(
@@ -299,7 +303,9 @@ where
             };
 
             embeddings.push(Embedding {
-                document: all_texts[start + offset].clone(),
+                document: all_texts_iter
+                    .next()
+                    .expect("all_texts should have enough elements"),
                 vec: vector.into(),
             });
         }
@@ -352,7 +358,7 @@ where
     }
 
     let vectors = provider
-        .embed(all_texts.clone())
+        .embed(all_texts)
         .await
         .map_err(EmbeddingError::Provider)?;
 
