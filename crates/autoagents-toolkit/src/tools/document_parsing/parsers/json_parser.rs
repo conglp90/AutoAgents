@@ -3,12 +3,13 @@ use crate::tools::document_parsing::ParsedDocument;
 use serde_json::json;
 
 pub fn parse_json(bytes: &[u8]) -> Result<ParsedDocument, ParseError> {
-    let text = String::from_utf8(bytes.to_vec())?;
+    let text = std::str::from_utf8(bytes)
+        .map_err(|e| ParseError::Format(format!("UTF-8 error: {}", e)))?;
 
-    let value: serde_json::Value = serde_json::from_str(&text)
+    let value: serde_json::Value = serde_json::from_str(text)
         .map_err(|e| ParseError::Format(format!("Invalid JSON: {}", e)))?;
 
-    let pretty = serde_json::to_string_pretty(&value).unwrap_or_else(|_| text.clone());
+    let pretty = serde_json::to_string_pretty(&value).unwrap_or_else(|_| text.to_string());
 
     let type_info = match &value {
         serde_json::Value::Array(a) => format!("array[{}]", a.len()),

@@ -3,8 +3,7 @@ use crate::tools::document_parsing::ParsedDocument;
 use serde_json::json;
 
 pub fn parse_xml(bytes: &[u8]) -> Result<ParsedDocument, ParseError> {
-    let xml_str = String::from_utf8(bytes.to_vec())?;
-    let mut reader = quick_xml::Reader::from_str(&xml_str);
+    let mut reader = quick_xml::Reader::from_reader(bytes);
     let mut text_parts = Vec::new();
     let mut buf = Vec::new();
 
