@@ -1,0 +1,3 @@
+## 2024-10-31 - Zero-copy byte deserialization vs string conversion allocations
+**Learning:** We noticed `document_parsing` tools reading whole byte slices into intermediate UTF-8 strings before parsing them with generic readers for formats like JSON or XML. While `String::from_utf8(bytes.to_vec())?` doesn't double-allocate (because `String` wraps `Vec` directly), it still needlessly copies bytes and validates UTF-8 for parsers that can handle byte streams natively.
+**Action:** When working with raw byte streams in Rust (particularly `&[u8]`), always look for direct struct/reader constructors (e.g., `serde_json::from_slice`, `quick_xml::Reader::from_reader`) which read bytes directly with minimal/no allocation.
